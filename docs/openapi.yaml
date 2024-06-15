@@ -1,0 +1,74 @@
+openapi: 3.0.3
+
+info:
+  title: Gerenciar o cadastro do cliente
+  description: API para cadastro, atualização, consulta e exclusão de clientes.
+  version: 1.0.0
+
+paths:
+  '/clientes':
+    post:
+      tags:
+        - clientes
+      summary: Cadastrar cliente
+      requestBody:
+        description: Novo cliente a ser cadastrado.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/cliente'
+      responses:
+        201:
+          description: Recurso criado com sucesso.
+
+components:
+  schemas:
+    cliente:
+      type: object
+      description: Objeto que representa um cliente.
+      properties:
+        nomeCliente:
+          type: string
+          description: Nome do cliente.
+          minLength: 1
+          maxLength: 255
+          example: 'Joaquim Torres'
+        numeroDocumentoCliente:
+          type: string
+          description: Número do documento do cliente (CPF/CNPJ).
+        dataNascimentoCliente:
+          type: string
+          format: date
+          description: Data de nascimento do cliente no formato AAAA-MM-DD.
+        categoriaCliente:
+          type: string
+          description: Categoria do cliente.
+          enum: ['bronze', 'prata', 'ouro']
+        enderecoCliente:
+          $ref: '#/components/schemas/enderecoCliente'
+      required:
+        - nomeCliente
+        - numeroDocumentoCliente
+
+    enderecoCliente:
+      type: object
+      description: Endereço completo do cliente.
+      properties:
+        logradouro:
+          type: string
+          description: Rua, Avenida, Estrada, Rodovia, etc.
+        cep:
+          type: string
+          description: CEP numérico no formato XXXXX-XXX.
+        complemento:
+          type: string
+          description: Complemento do endereço, como apartamento ou sala.
+        bairro:
+          type: string
+          description: Bairro do cliente.
+        cidade:
+          type: string
+          description: Cidade do cliente.
+      required:
+        - logradouro
+        - cep
