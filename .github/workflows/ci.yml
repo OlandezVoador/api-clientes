@@ -1,0 +1,44 @@
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events for the "silver" and "gold" branches
+  push:
+    branches: [ "silver", "gold" ]
+  pull_request:
+    branches: [ "silver", "gold" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+  approve-gold-pr:
+    # This job only runs for pull requests to the "gold" branch
+    if: github.event.pull_request.base.ref == 'gold'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if PR is from silver branch
+        id: check-pr
+        run: |
+          if [ "${{ github.event.pull_request.head.ref }}" != "silver" ]; then
+            echo "This PR is not from the silver branch. Exiting."
+            exit 1
+          fi
+
+      - name: Require approval for merging to gold
+        uses: hmarr/auto-approve-action@v2.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Approval check
+        run: echo "Pull request is from silver and needs approval to merge into gold."
